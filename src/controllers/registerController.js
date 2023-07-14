@@ -8,28 +8,28 @@ const jwt = require('jsonwebtoken');
 module.exports ={
   signup: async(req, res)=>{
     const { body } = req;
-
-    if (!body.username ){
+    const { username, fullname,password,email, role} = body;
+    if (!username ){
       return res.status(400).json({status:'failer',message:'username is required'});
 
     }
-    if (!body.fullname){
+    if (!fullname){
       return res.status(400).json({status:'failer',message:'fullname is required'});
 
     }
-    if (!body.password ){
+    if (!password ){
       return res.status(400).json({status:'failer',message:'password is required'});
 
     }
-    if (!body.email ){
+    if (!email ){
       return res.status(400).json({status:'failer',message:'email is required'});
     }
-    if(!body.role) {
+    if(!role) {
       return res.status(400).json({status:'failer',message:'role is required'});
     }
 
-    const password = await brycpt.hash(body.password,10);
-    const newUser = new User(body.username, password, body.fullname,body.email, body.role);
+    const passwordHash = await brycpt.hash(body.password,10);
+    const newUser = new User(username, passwordHash, fullname,email, role);
 
     const response = await db.createUser(newUser).then((res)=>{
       return res[0][0];
@@ -57,8 +57,7 @@ module.exports ={
     }
     // eslint-disable-next-line no-undef
     const credential = new UserCrendential(email, password);
-    console.log('Objecto credential',credential);
-
+  
     const user = await db.verifyUser(credential).then((res)=>{
       return res[0][0];
     });
